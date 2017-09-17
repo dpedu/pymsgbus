@@ -37,7 +37,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="dump all messages from msgbus")
     parser.add_argument("-i", "--host", default="127.0.0.1", help="host to connect to")
-    parser.add_argument("-p", "--port", default=7003, help="port to connect to")
+    parser.add_argument("-p", "--port", type=int, help="port to connect to")
     parser.add_argument("-c", "--channel", nargs="+", help="dump only channels")
     parser.add_argument("--type", default="native", choices=["native", "raw"], help="client type")
     args = parser.parse_args()

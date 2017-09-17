@@ -1,7 +1,9 @@
 
-def send_native(host, port, channel, messages):
+def send_native(host, port, pubport, channel, messages):
     """
-    Send some messages on a specified channel using the msgbus client
+    Send some messages on a specified channel using the msgbus client. Note that if we don't specify a non-None
+    publishing port when creating the client, which means the client will find it using metadata the server publishes
+    on `port`.
     """
     from contextlib import closing
     from msgbus.client import MsgbusSubClient
@@ -14,7 +16,10 @@ def send_zmq(host, port, channel, messages):
     """
     Send some messages on a specified channel using a raw zmq socket.
     Note: the native client connects to the server's publisher port and autodetects the server's subscriber port. The
-    raw zmq socket must connect directly to the subscriber port
+    raw zmq socket must connect directly to the subscriber port. The first pub() of the native client will block as it
+    listens for metadata from the server to establish the underlying zmq publisher socket. if the server is down, the
+    native client could raise PublishSetupException or block as long as the timeout. The raw zmq socket is allowed to
+    silently fail, in this example.
     """
     import zmq
     from time import sleep
@@ -41,7 +46,7 @@ def main():
     args = parser.parse_args()
 
     if args.type == "native":
-        send_native(args.host, args.port, args.channel, args.message)
+        send_native(args.host, args.port, None, args.channel, args.message)
     elif args.type == "raw":
         send_zmq(args.host, args.port, args.channel, args.message)
 

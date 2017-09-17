@@ -127,7 +127,7 @@ class MsgBusServer(object):
                  "pub_sock_addr", "seed_peers", "peers", "name", "port_range", "counter_local_messages",
                  "counter_remote_messages", "conf", "inprogress_connects"]
 
-    def __init__(self, loop, ctx, subport, pubport, port_range, peers):
+    def __init__(self, loop, ctx, pubport, subport, port_range, peers):
         assert subport != pubport
         self.alive = True  # TODO move this?
 
@@ -343,8 +343,8 @@ class MsgBusServer(object):
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="msgbus server")
-    parser.add_argument("-p", "--port", default=7003, help="first listen port (tcp)")
-    parser.add_argument("-n", "--peers", nargs="+", help="connect to peer 1.2.3.4:5678")
+    parser.add_argument("-p", "--port", default=7000, help="server publisher port")
+    parser.add_argument("-n", "--peers", nargs="+", help="connect to peer's publisher port 1.2.3.4:5678")
     parser.add_argument("-r", "--port-range", default=[7010, 7400], nargs=2, help="peer port range")
     args = parser.parse_args()
 
