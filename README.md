@@ -48,7 +48,7 @@ And this code would send a message on the orderbook channel:
 ```python
 with closing(MsgbusSubClient(host, port)) as client:
     for message in messages:
-        client.pub(channel, message)
+        client.pub("orderbook", "hello world")
 ```
 
 Because pymsgbus is built on [ZeroMQ](http://zeromq.org/), you don't have to start the clients or servers in any
