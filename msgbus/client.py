@@ -54,7 +54,6 @@ class MsgbusSubClient(object):
         assert type(channel) is str
         if not self.sub_socket:
             self.connect_sub(self.host, self.port)
-        print("subbin to", channel)
         self.sub_socket.setsockopt(zmq.SUBSCRIBE, channel.encode("utf-8"))
         self.subscriptions.append(channel)
 
