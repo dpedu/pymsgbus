@@ -45,7 +45,7 @@ with closing(MsgbusSubClient(host, port)) as client:
 
 And this code would send a message on the orderbook channel:
 
-```
+```python
 with closing(MsgbusSubClient(host, port)) as client:
     for message in messages:
         client.pub(channel, message)
