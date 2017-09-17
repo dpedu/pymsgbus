@@ -59,6 +59,5 @@ Of course, messages published when there's no server or no listeners are silentl
 TODO
 ----
 
-* Remove many 127.0.0.1 hardcodings
 * Improve performance
 * Create docs
