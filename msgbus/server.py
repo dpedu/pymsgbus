@@ -5,6 +5,7 @@ import zmq.asyncio
 from contextlib import closing
 from random import randint
 import signal
+from concurrent.futures import CancelledError
 zmq.asyncio.install()
 
 
@@ -256,7 +257,9 @@ class MsgBusServer(object):
                         peer_response = await wait_for_cmd("__peer_response")
                         if peer_response:
                             # print("got peer resp: ", peer_response)
-                            break
+                            name, _ = peer_response.split(" ",  1)
+                            if name == self.name:
+                                break
                         await asyncio.sleep(1)
 
                 if not peer_response:
