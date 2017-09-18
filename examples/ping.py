@@ -41,7 +41,7 @@ def main():
     parser.add_argument("-m", "--mode", choices=["ping", "pong"], required=True, help="client mode")
     parser.add_argument("--payload", default="hello", help="ping payload")
     parser.add_argument("-c", "--count", type=int, default=5, help="how many pings")
-    parser.add_argument("--interval", type=int, default=1, help="ping interval")
+    parser.add_argument("--interval", type=float, default=1, help="ping interval")
     args = parser.parse_args()
 
     if args.mode == "ping":

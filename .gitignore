@@ -3,3 +3,4 @@ dist/
 msgbus.egg-info/
 testenv/
 __pycache__
+.DS_Store
