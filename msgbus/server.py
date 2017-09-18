@@ -200,7 +200,7 @@ class MsgBusServer(object):
         while self.alive:
             for peer_addr in self.seed_peers:
                 if not self.has_peer(peer_addr):
-                    print("connecting to {}".format(peer_addr))
+                    print("Connecting to {}".format(peer_addr))
                     self.loop.call_soon(asyncio.ensure_future, self.connect_to_peer(peer_addr))
             await asyncio.sleep(1)
 
