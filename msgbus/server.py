@@ -101,7 +101,7 @@ class MsgBusServerPeer(object):
         interval = self.server.conf.get("peer_keepalive_timeout", 5)
         while self.alive:
             if time() - self.last_keepalive > interval:
-                print("Peer {} is lost!".format(self.name))
+                print("Peer '{}' is lost!".format(self.name))
                 self.server.disconnect_peer(self.name)
                 break
             await asyncio.sleep(1)
@@ -249,12 +249,11 @@ class MsgBusServer(object):
                         await peer_sub_socket.send("__msgbus_meta __peer_request {}".format(self.name).encode('utf-8'))
                         peer_response = await wait_for_cmd("__peer_response")
                         if peer_response:
-                            print("got peer resp: ", peer_response)
+                            # print("got peer resp: ", peer_response)
                             break
                         await asyncio.sleep(1)
 
                 if not peer_response:
-                    # TODO RETRY
                     print("peering failed for", peer_name)
                     return
 
@@ -313,7 +312,7 @@ class MsgBusServer(object):
             if sub_port is None:
                 sub_port = pub_port + 1
             peer_ports = (sub_port, pub_port)
-            print("New peer '{}' on P:{} S:{}".format(peer_name, pub_port, sub_port))
+            print("New peer '{}' on {} P:{} S:{}".format(peer_name, host, pub_port, sub_port))
             self.peers[peer_name] = MsgBusServerPeer(self, peer_name, host, *peer_ports, bind=bind)
             self.loop.call_soon(asyncio.ensure_future, self.peers[peer_name].run())  # seems to act like a fork
         return self.peers[peer_name]
