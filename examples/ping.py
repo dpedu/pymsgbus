@@ -1,6 +1,7 @@
 from contextlib import closing
 from msgbus.client import MsgbusSubClient
 from time import time, sleep
+from threading import Thread
 
 
 def pong(host, port):
@@ -11,26 +12,39 @@ def pong(host, port):
         client.sub("ping")
         while True:
             _, msg = client.recv()
-            client.pub("pong", msg)
+            client.pub("pong", "{} {}".format(msg, time()))
             print("pong(): >< {} {}".format(_, msg))
 
 
-def ping(host, port, message, count=5, interval=1):
+def ping(host, port, count=5, interval=1):
     """
     Send a ping and wait for the reply. In a loop
     """
     with closing(MsgbusSubClient(host, port)) as client:
+        client.prepare_pub()
         client.sub("pong")
-        sleep(1)
+        sleep(2)
 
-        while count > 0:
-            count -= 1
-            print("ping(): > ping", message)
-            start = time()
-            client.pub("ping", message)
-            _, msg = client.recv()
-            print("ping(): < {} {} rtt: {:f}\n".format(_, msg, round(time() - start, 8)))
+        def ping_recver():
+            recvtime = 0
+            while True:
+                _, msg = client.recv()
+                recvtime = time()
+                seq, msgtime, remotetime = msg.split(" ")
+                print("ping(): < {} {} rtt: {:f}\n".format(_, seq, round(recvtime - float(msgtime), 8)))
+
+        recv = Thread(target=ping_recver)
+        recv.daemon = True
+        recv.start()
+
+        seq = 0
+        while seq < count:
+            print("ping(): > ping {}".format(seq))
+            client.pub("ping", "{} {}".format(seq, time()))
             sleep(interval)
+            seq += 1
+
+        sleep(interval * 2)
 
 
 def main():
@@ -39,13 +53,12 @@ def main():
     parser.add_argument("-i", "--host", default="127.0.0.1", help="host to connect to")
     parser.add_argument("-p", "--port", default=7003, help="port to connect to")
     parser.add_argument("-m", "--mode", choices=["ping", "pong"], required=True, help="client mode")
-    parser.add_argument("--payload", default="hello", help="ping payload")
     parser.add_argument("-c", "--count", type=int, default=5, help="how many pings")
     parser.add_argument("--interval", type=float, default=1, help="ping interval")
     args = parser.parse_args()
 
     if args.mode == "ping":
-        ping(args.host, args.port, args.payload, args.count, args.interval)
+        ping(args.host, args.port, args.count, args.interval)
     elif args.mode == "pong":
         pong(args.host, args.port)
 

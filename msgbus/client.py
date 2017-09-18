@@ -97,7 +97,10 @@ class MsgbusSubClient(object):
             message = message.encode("utf-8")
         if not self.pub_socket:
             with self.lock:
-                self._setup_publish_socket(timeout)
-                if settle:
-                    sleep(1)
+                self.prepare_pub(timeout=timeout, settle=settle)
         self.pub_socket.send(channel.encode("utf-8") + b' ' + message)
+
+    def prepare_pub(self, timeout=5, settle=True):
+        self._setup_publish_socket(timeout)
+        if settle:
+            sleep(1)

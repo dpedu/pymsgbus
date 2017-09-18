@@ -160,6 +160,7 @@ class MsgBusServer(object):
                                     self.peer_monitor(),
                                     self.stats_monitor()], loop=self.loop)
 
+    @exewrap
     async def stats_monitor(self):
         """
         Print out stats on an interval (messages/s etc)
@@ -176,21 +177,25 @@ class MsgBusServer(object):
                 _interval = round(time() - last, 2)
                 counter_local_total += self.counter_local_messages
                 counter_remote_total += self.counter_remote_messages
-                print("\nLast {}s i delivered {} messages locally ({}/s)"
-                      .format(_interval, self.counter_local_messages,
-                              round(self.counter_local_messages / _interval, 2)))
-                print("Last {}s i delivered {} messages remotely ({}/s)"
-                      .format(_interval, self.counter_remote_messages,
-                              round(self.counter_remote_messages / _interval, 2)))
                 total = self.counter_local_messages + self.counter_remote_messages
-                print("Last {}s total {} messages ({}/s)".format(_interval, total, round(total / _interval, 2)))
                 uptime = round(time() - start, 2)
-                print("Lifetime {}s i delivered {} messages locally ({}/s)"
-                      .format(uptime, counter_local_total, round(counter_local_total / uptime, 2)))
-                print("Lifetime {}s i delivered {} messages remotely ({}/s)"
-                      .format(uptime, counter_remote_total, round(counter_remote_total / uptime, 2)))
-                total = counter_local_total + counter_remote_total
-                print("Lifetime {}s total {} messages ({}/s)\n".format(uptime, total, round(total / uptime, 2)))
+                total_life = counter_local_total + counter_remote_total
+                totals_local = "Total: {}s: {} (L:{} R:{})" \
+                               .format(_interval, total, self.counter_local_messages, self.counter_remote_messages)
+                totals_lifetime = "Lifetime {}s {} (L:{} R: {})" \
+                                  .format(round(uptime), total_life, counter_local_total, counter_remote_total)
+                tps_interval = "Tps:   {}s: {} (L:{} R:{})" \
+                               .format(_interval,
+                                       total, round(total / _interval, 2),
+                                       round(self.counter_local_messages / _interval, 2),
+                                       round(self.counter_remote_messages / _interval, 2))
+                tps_lifetime = "Lifetime {}s {} (L:{} R: {})" \
+                               .format(uptime,
+                                       round(total_life / uptime, 2),
+                                       round(counter_local_total / uptime, 2),
+                                       round(counter_remote_total / uptime, 2))
+                print("{: <40}   {: <40}\n{: <40}   {: <40}"
+                      .format(totals_local, totals_lifetime, tps_interval, tps_lifetime))
             self.counter_local_messages = 0
             self.counter_remote_messages = 0
             last = time()
