@@ -29,7 +29,7 @@ def ping(host, port, message, count=5, interval=1):
             start = time()
             client.pub("ping", message)
             _, msg = client.recv()
-            print("ping(): <", _, msg, "rtt:", round(time() - start, 6), "\n")
+            print("ping(): < {} {} rtt: {:f}\n".format(_, msg, round(time() - start, 8)))
             sleep(interval)
 
 
@@ -53,7 +53,7 @@ def main():
     # python3 examples/ping.py -m ping -i 127.0.0.1 -p 7100
     # ping(): > ping hello
     # pong(): >< ping hello
-    # ping(): < pong hello rtt: 0.000666
+    # ping(): < pong hello rtt: 0.000046
 
 
 if __name__ == '__main__':
