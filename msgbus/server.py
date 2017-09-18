@@ -231,7 +231,7 @@ class MsgBusServer(object):
                         except zmq.error.Again:
                             await asyncio.sleep(0.1)
 
-                print("waiting for peer info")
+                # print("waiting for peer info")
                 peer_info = await wait_for_cmd("__my_info")
 
                 if not peer_info:
@@ -241,7 +241,7 @@ class MsgBusServer(object):
                 remote_name, subport, subproto, pubbport, pubproto = peer_info.split()
                 peer_sub_addr = '{}://{}:{}'.format(subproto, host, subport)
                 peer_response = []
-                print(peer_sub_addr)
+                # print(peer_sub_addr)
                 with closing(self.ctx.socket(zmq.PUB)) as peer_sub_socket:
                     peer_sub_socket.connect(peer_sub_addr)
                     await asyncio.sleep(1)
@@ -260,7 +260,7 @@ class MsgBusServer(object):
                 _, pubport, pubproto, subport, subproto = peer_response.split()
                 peer = self.new_peer(remote_name, host, pub_port=pubport, sub_port=subport, bind=False)
                 peer.confpeer = peer_name
-                print("Added peer", peer_name)
+                # print("Added peer", peer_name)
         finally:
             self.inprogress_connects.remove(peer_name)
 
