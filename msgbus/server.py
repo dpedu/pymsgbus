@@ -348,8 +348,9 @@ def main():
     with zmq.asyncio.Context() as ctx:
         loop = asyncio.get_event_loop()
         # loop.set_debug(True)
+        port_range = (int(args.port_range[0]), int(args.port_range[1]))
         server = MsgBusServer(loop, ctx, args.bind_host, int(args.port), int(args.port) + 1,
-                              port_range=args.port_range, peers=args.peers if args.peers else [],
+                              port_range=port_range, peers=args.peers if args.peers else [],
                               name=args.name)
 
         def signal_handler(signum, stack):

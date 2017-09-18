@@ -31,7 +31,13 @@ def ping(host, port, count=5, interval=1):
                 _, msg = client.recv()
                 recvtime = time()
                 seq, msgtime, remotetime = msg.split(" ")
-                print("ping(): < {} {} rtt: {:f}\n".format(_, seq, round(recvtime - float(msgtime), 8)))
+                msgtime = float(msgtime)
+                remotetime = float(remotetime)
+                transittime = recvtime - msgtime
+                # out = remotetime - msgtime
+                # back = recvtime - remotetime
+                # These aren't printed because clock sync imperfection makes them unreliable
+                print("ping(): < {} {} rtt: {:f}\n".format(_, seq, round(transittime, 8)))
 
         recv = Thread(target=ping_recver)
         recv.daemon = True
