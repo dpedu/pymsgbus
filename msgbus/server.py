@@ -5,19 +5,7 @@ import zmq.asyncio
 from contextlib import closing
 from random import randint
 import signal
-from concurrent.futures import CancelledError
 zmq.asyncio.install()
-
-
-def exewrap(func):
-    async def wrapped(*args, **kwargs):
-        try:
-            await func(*args, **kwargs)
-        except:
-            print("EXCEPTIN")
-            import traceback
-            traceback.print_exc()
-    return wrapped
 
 
 class MsgBusServerPeer(object):
@@ -161,7 +149,6 @@ class MsgBusServer(object):
                                     self.peer_monitor(),
                                     self.stats_monitor()], loop=self.loop)
 
-    @exewrap
     async def stats_monitor(self):
         """
         Print out stats on an interval (messages/s etc)
@@ -226,6 +213,7 @@ class MsgBusServer(object):
             with closing(self.ctx.socket(zmq.SUB)) as peer_pub_socket:
                 peer_pub_socket.connect(peer_pub_addr)
                 peer_pub_socket.subscribe(b'__msgbus_meta')
+
                 async def wait_for_cmd(cmd_name, timeout=10):
                     start = time()
                     while time() - start < timeout:
@@ -257,7 +245,7 @@ class MsgBusServer(object):
                         peer_response = await wait_for_cmd("__peer_response")
                         if peer_response:
                             # print("got peer resp: ", peer_response)
-                            name, _ = peer_response.split(" ",  1)
+                            name, _ = peer_response.split(" ", 1)
                             if name == self.name:
                                 break
                         await asyncio.sleep(1)
